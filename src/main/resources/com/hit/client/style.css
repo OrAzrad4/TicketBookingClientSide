@@ -1,0 +1,18 @@
+.root {
+
+    -fx-background-image: url("background.png");
+
+    -fx-background-size: cover;
+
+    -fx-background-position: center center;
+
+
+    -fx-background-repeat: no-repeat;
+}
+
+
+.label {
+    -fx-text-fill: white;
+    -fx-font-weight: bold;
+    -fx-effect: dropshadow(three-pass-box, black, 10, 0, 0, 0);
+}
