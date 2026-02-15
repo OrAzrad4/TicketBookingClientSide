@@ -12,7 +12,7 @@ public class ClientApplication extends Application {
                 getClass().getResource("ticket-view.fxml")
         );
         Scene scene = new Scene(loader.load(), 400, 300);
-        stage.setTitle("JavaFX + Maven + Scene Builder");
+        stage.setTitle("Ticket Booking System");
         stage.setScene(scene);
         stage.show();
     }

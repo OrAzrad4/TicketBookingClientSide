@@ -5,21 +5,20 @@ import com.google.gson.reflect.TypeToken;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
-import javafx.fxml.Initializable; // ייבוא חדש
+import javafx.fxml.Initializable;
 import javafx.scene.control.*;
 import com.hit.client.model.Request;
 import com.hit.client.model.Response;
 import com.hit.client.model.Ticket;
 import com.hit.client.network.Client;
 
-import java.net.URL; // ייבוא חדש
+import java.net.URL;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.ResourceBundle; // ייבוא חדש
+import java.util.ResourceBundle;
 import java.lang.reflect.Type;
 
-// הוספנו "implements Initializable" לכותרת המחלקה
 public class TicketController implements Initializable {
 
     @FXML private TextField tfId, tfEventName, tfCustomerName, tfPrice, tfSearch;
@@ -29,16 +28,14 @@ public class TicketController implements Initializable {
     private Client client = new Client();
     private Gson gson = new Gson();
 
-    // --- פונקציה חדשה: רצה אוטומטית כשהחלון נפתח ---
+    // Start this function when the screen wake up and show all the events
     @Override
     public void initialize(URL location, ResourceBundle resources) {
-        // אנחנו קוראים לפונקציית החיפוש מיד בהתחלה.
-        // מכיוון שתיבת החיפוש (tfSearch) ריקה כרגע,
-        // השרת יבין שצריך להחזיר את כל הרשימה.
+
         onSearchClick();
     }
 
-    // --- הוספת כרטיס ---
+    //Add new ticket
     @FXML
     protected void onAddTicketClick() {
         try {
@@ -56,7 +53,7 @@ public class TicketController implements Initializable {
             String response = client.sendRequest(request);
             lblAddStatus.setText("Server Response: " + response);
 
-            // בונוס: רענון הטבלה אוטומטית אחרי הוספה (כדי שנראה את החדש מיד)
+            // Reload the page immediately after add a new ticket
             clearAddForm();
             onSearchClick();
 
@@ -67,31 +64,31 @@ public class TicketController implements Initializable {
         }
     }
 
-    // --- חיפוש (כעת נקראת גם אוטומטית וגם ידנית) ---
+    //Search event
     @FXML
     protected void onSearchClick() {
         try {
             Map<String, String> headers = new HashMap<>();
-            headers.put("action", "ticket/search");
+            headers.put("action", "ticket/search");     // Create the header
 
             Map<String, String> body = new HashMap<>();
-            // אם הפונקציה נקראת מה-initialize, הטקסט פה ריק -> השרת יחזיר הכל
-            body.put("searchQuery", tfSearch.getText());
+            // If called from initialize return all ticket because in SearchService return allTickets if the field is empty
+            body.put("searchQuery", tfSearch.getText()); // Create body
 
-            Request request = new Request(headers, body);
-            String jsonResponse = client.sendRequest(request);
+            Request request = new Request(headers, body); // create request
+            String jsonResponse = client.sendRequest(request); // get the response
 
             if (jsonResponse != null) {
-                Response responseObj = gson.fromJson(jsonResponse, Response.class);
-
+                Response responseObj = gson.fromJson(jsonResponse, Response.class); // convert to java object
+                // Convert again to JSON but now ask to List Ticket
                 String listJson = gson.toJson(responseObj.getBody());
                 Type listType = new TypeToken<List<Ticket>>(){}.getType();
                 List<Ticket> tickets = gson.fromJson(listJson, listType);
 
-                ObservableList<Ticket> data = FXCollections.observableArrayList(tickets);
-                ticketsTable.setItems(data);
+                ObservableList<Ticket> data = FXCollections.observableArrayList(tickets);  //Convert the list to JavaFX list
+                ticketsTable.setItems(data);  // Update the UI list to JavaFX list
 
-                // עדכון הסטטוס למשתמש
+                // Showing the data to user
                 if (tfSearch.getText().isEmpty()) {
                     lblSearchStatus.setText("Showing all " + tickets.size() + " tickets");
                 } else {
@@ -105,24 +102,25 @@ public class TicketController implements Initializable {
         }
     }
 
-    // --- מחיקה ---
+    // Delete
     @FXML
     protected void onDeleteClick() {
-        Ticket selected = ticketsTable.getSelectionModel().getSelectedItem();
+        Ticket selected = ticketsTable.getSelectionModel().getSelectedItem(); // Check the chosen Ticket
         if (selected == null) {
-            lblSearchStatus.setText("Select a ticket first");
+            lblSearchStatus.setText("Select a ticket first"); // Telling the user to choose Ticket if he didn't
             return;
         }
 
         Map<String, String> headers = new HashMap<>();
-        headers.put("action", "ticket/delete");
-        client.sendRequest(new Request(headers, selected));
+        headers.put("action", "ticket/delete");    // Create the header
+        client.sendRequest(new Request(headers, selected)); // Create response
 
-        // הסרה מקומית מהטבלה
+        // Local remove from the table
         ticketsTable.getItems().remove(selected);
         lblSearchStatus.setText("Deleted ticket ID: " + selected.getId());
     }
 
+    // Clear the form for user comfort
     private void clearAddForm() {
         tfId.clear();
         tfEventName.clear();
