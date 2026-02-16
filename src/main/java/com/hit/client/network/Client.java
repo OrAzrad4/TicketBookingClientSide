@@ -7,7 +7,7 @@ import java.net.Socket;
 import java.util.Scanner;
 
 public class Client {
-    // הפורט חייב להיות זהה למה שהוגדר ב-ServerDriver
+    // The same port on server
     private static final int PORT = 34567;
     private Gson gson = new Gson();
 
@@ -16,11 +16,11 @@ public class Client {
              PrintWriter writer = new PrintWriter(socket.getOutputStream(), true);
              Scanner reader = new Scanner(socket.getInputStream())) {
 
-            // המרה ל-JSON ושליחה לשרת
+            // Convert to Json and send to server
             String jsonRequest = gson.toJson(request);
             writer.println(jsonRequest);
 
-            // קבלת תשובה
+            // Wait to response
             if (reader.hasNextLine()) {
                 return reader.nextLine();
             }

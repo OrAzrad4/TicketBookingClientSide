@@ -5,7 +5,7 @@ import java.util.Objects;
 
 public class Ticket implements Serializable {
 
-    private static final long serialVersionUID = 1L;
+    private static final long serialVersionUID = 1L;     // If the class will be change
 
     private Long id;
     private String eventName;

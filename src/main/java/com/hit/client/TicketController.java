@@ -47,10 +47,10 @@ public class TicketController implements Initializable {
             );
 
             Map<String, String> headers = new HashMap<>();
-            headers.put("action", "ticket/save");
-            Request request = new Request(headers, t);
+            headers.put("action", "ticket/save");    // Create the headers
+            Request request = new Request(headers, t);  // Create the request
 
-            String response = client.sendRequest(request);
+            String response = client.sendRequest(request); // Send the request and get the response as normal comment
             lblAddStatus.setText("Server Response: " + response);
 
             // Reload the page immediately after add a new ticket
@@ -76,7 +76,7 @@ public class TicketController implements Initializable {
             body.put("searchQuery", tfSearch.getText()); // Create body
 
             Request request = new Request(headers, body); // create request
-            String jsonResponse = client.sendRequest(request); // get the response
+            String jsonResponse = client.sendRequest(request); // Send the Request and get the response as table of content
 
             if (jsonResponse != null) {
                 Response responseObj = gson.fromJson(jsonResponse, Response.class); // convert to java object
@@ -113,7 +113,7 @@ public class TicketController implements Initializable {
 
         Map<String, String> headers = new HashMap<>();
         headers.put("action", "ticket/delete");    // Create the header
-        client.sendRequest(new Request(headers, selected)); // Create response
+        client.sendRequest(new Request(headers, selected)); // Send the request
 
         // Local remove from the table
         ticketsTable.getItems().remove(selected);
