@@ -113,12 +113,20 @@ public class TicketController implements Initializable {
 
         Map<String, String> headers = new HashMap<>();
         headers.put("action", "ticket/delete");    // Create the header
-        client.sendRequest(new Request(headers, selected)); // Send the request
+        String jsonResponse = client.sendRequest(new Request<>(headers, selected));
 
-        // Local remove from the table
-        ticketsTable.getItems().remove(selected);
-        lblSearchStatus.setText("Deleted ticket ID: " + selected.getId());
-    }
+        if (jsonResponse != null) {
+            Response<Object> responseObj = gson.fromJson(jsonResponse, Response.class);
+
+            if ("OK".equals(responseObj.getHeaders().get("status"))) {
+                // After check if the server side ok we update UI
+                ticketsTable.getItems().remove(selected);
+                lblSearchStatus.setText("Deleted ticket ID: " + selected.getId());
+            } else {
+                // Failed in the server
+                lblSearchStatus.setText("Failed to delete: " + responseObj.getBody());
+            }
+        }    }
 
     // Clear the form for user comfort
     private void clearAddForm() {
