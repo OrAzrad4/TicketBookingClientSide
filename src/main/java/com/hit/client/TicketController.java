@@ -79,7 +79,7 @@ public class TicketController implements Initializable {
             String jsonResponse = client.sendRequest(request); // Send the Request and get the response as table of content
 
             if (jsonResponse != null) {
-                Response responseObj = gson.fromJson(jsonResponse, Response.class); // convert to java object
+                Response<Object> responseObj = gson.fromJson(jsonResponse, Response.class); // convert to java object
                 // Convert again to JSON but now ask to List Ticket
                 String listJson = gson.toJson(responseObj.getBody());
                 Type listType = new TypeToken<List<Ticket>>(){}.getType();

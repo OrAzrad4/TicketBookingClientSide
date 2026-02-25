@@ -1,13 +1,8 @@
 package com.hit.client.model;
 
-import java.io.Serializable;
 import java.util.Map;
 
-/**
- * Represents the request protocol sent from Client to Server.
- * Supports Generic Body <T> and Headers for metadata.
- */
-public class Request<T> implements Serializable {
+public class Request<T>  {
 
     // Action to do
     private Map<String, String> headers;
