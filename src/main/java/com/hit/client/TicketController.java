@@ -45,17 +45,21 @@ public class TicketController implements Initializable {
                     tfCustomerName.getText(),
                     Double.parseDouble(tfPrice.getText())
             );
-
+            if (tfCustomerName.getText().isEmpty() || tfEventName.getText().isEmpty()) {   // Check validation
+                lblAddStatus.setText("Error: Event Name and Customer Name can`t be empty!");
+                return;
+            }
             Map<String, String> headers = new HashMap<>();
             headers.put("action", "ticket/save");    // Create the headers
             Request request = new Request(headers, t);  // Create the request
 
             String response = client.sendRequest(request); // Send the request and get the response as string
-            lblAddStatus.setText("Server Response: " + response);
-
-            // Reload the page immediately after add a new ticket
-            clearAddForm();
-            onSearchClick();
+            Response serverResponse = gson.fromJson(response, Response.class); // Convert to Response from Json to friendly message
+            lblAddStatus.setText("Server Response: " + serverResponse.getBody()); // Taking the body to friendly message
+            if (response.contains("Success")) {   // Reload the page immediately after add a new ticket
+                clearAddForm();
+                onSearchClick();
+            }
 
         } catch (NumberFormatException e) {
             lblAddStatus.setText("Error: Check numeric fields");
