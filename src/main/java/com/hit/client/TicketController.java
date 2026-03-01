@@ -50,7 +50,7 @@ public class TicketController implements Initializable {
             headers.put("action", "ticket/save");    // Create the headers
             Request request = new Request(headers, t);  // Create the request
 
-            String response = client.sendRequest(request); // Send the request and get the response as normal comment
+            String response = client.sendRequest(request); // Send the request and get the response as string
             lblAddStatus.setText("Server Response: " + response);
 
             // Reload the page immediately after add a new ticket
@@ -71,19 +71,18 @@ public class TicketController implements Initializable {
             Map<String, String> headers = new HashMap<>();
             headers.put("action", "ticket/search");     // Create the header
 
-            Map<String, String> body = new HashMap<>();
+            Map<String, String> body = new HashMap<>();  // Here I chose use map because Gson work with map
             // If called from initialize return all ticket because in SearchService return allTickets if the field is empty
-            body.put("searchQuery", tfSearch.getText()); // Create body
+            body.put("searchQuery", tfSearch.getText()); // Create body according to the server parameters
 
             Request request = new Request(headers, body); // create request
-            String jsonResponse = client.sendRequest(request); // Send the Request and get the response as table of content
+            String jsonResponse = client.sendRequest(request); // Send the Request and get the response as string
 
             if (jsonResponse != null) {
                 Response<Object> responseObj = gson.fromJson(jsonResponse, Response.class); // convert to java object
-                // Convert again to JSON but now ask to List Ticket
-                String listJson = gson.toJson(responseObj.getBody());
-                Type listType = new TypeToken<List<Ticket>>(){}.getType();
-                List<Ticket> tickets = gson.fromJson(listJson, listType);
+                String listJson = gson.toJson(responseObj.getBody());       // Convert again to JSON to change the type to list of Tickets
+                Type listType = new TypeToken<List<Ticket>>(){}.getType();  // Ask to decide that the list type be Ticket list
+                List<Ticket> tickets = gson.fromJson(listJson, listType);   // Now have list of Tickets
 
                 ObservableList<Ticket> data = FXCollections.observableArrayList(tickets);  //Convert the list to JavaFX list
                 ticketsTable.setItems(data);  // Update the UI list to JavaFX list
@@ -113,12 +112,12 @@ public class TicketController implements Initializable {
 
         Map<String, String> headers = new HashMap<>();
         headers.put("action", "ticket/delete");    // Create the header
-        String jsonResponse = client.sendRequest(new Request<>(headers, selected));
+        String jsonResponse = client.sendRequest(new Request<>(headers, selected)); // Body is the chosen (selected) Ticket
 
         if (jsonResponse != null) {
             Response<Object> responseObj = gson.fromJson(jsonResponse, Response.class);
 
-            if ("OK".equals(responseObj.getHeaders().get("status"))) {
+            if ("OK".equals(responseObj.getHeaders().get("status"))) {  // Check if the server side returned ok status
                 // After check if the server side ok we update UI
                 ticketsTable.getItems().remove(selected);
                 lblSearchStatus.setText("Deleted ticket ID: " + selected.getId());

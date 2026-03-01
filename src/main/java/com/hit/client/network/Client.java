@@ -13,14 +13,14 @@ public class Client {
 
     public String sendRequest(Request request) {
         try (Socket socket = new Socket("localhost", PORT);
-             PrintWriter writer = new PrintWriter(socket.getOutputStream(), true);
+             PrintWriter writer = new PrintWriter(socket.getOutputStream(), true); // autoFlush because using println
              Scanner reader = new Scanner(socket.getInputStream())) {
 
             // Convert to Json and send to server
             String jsonRequest = gson.toJson(request);
             writer.println(jsonRequest);
 
-            // Wait to response
+            // Wait to response from the server
             if (reader.hasNextLine()) {
                 return reader.nextLine();
             }
